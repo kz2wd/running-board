@@ -8,10 +8,12 @@ var SAVE_PATH: String
 func _ready() -> void:
 	SAVE_PATH = SaveManager.save_path + "player_ids.json"
 
-func start_client(ip_address, port) -> void:
+var username: String = "Default username"
+func start_client(ip_address, port, player_name) -> void:
+	username = player_name
 	multiplayer.connected_to_server.connect(after_server_connect)
-	multiplayer.connection_failed.connect(func(): print("Failed to connect!"))
-	multiplayer.server_disconnected.connect(func(): print("Server disconnected!"))
+	multiplayer.connection_failed.connect(ask_disconnect)
+	multiplayer.server_disconnected.connect(ask_disconnect)
 
 	var peer = ENetMultiplayerPeer.new()
 	var err = peer.create_client(ip_address, port)
@@ -51,8 +53,14 @@ func after_server_connect():
 	get_tree().change_scene_to_packed(LOBBY)
 	print("client Connected successfully!")
 
+const BOOT_MENU = preload("uid://bnx1l2yd8igca")
+
+func ask_disconnect():
+	GameServer.reset()
+	multiplayer.multiplayer_peer.close()
+	get_tree().change_scene_to_packed(BOOT_MENU)
 
 @rpc("authority", "reliable")
 func send_game_id(game_id: String):
 	var player_id = get_or_create_player_uuid_for_game(game_id)
-	GameServer.ask_join_game.rpc_id(1, player_id, "default name")
+	GameServer.ask_join_game.rpc_id(1, player_id, username)

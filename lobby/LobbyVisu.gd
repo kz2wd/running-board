@@ -7,6 +7,8 @@ class_name LobbyVisu
 
 @onready var player_container: VBoxContainer = $PlayerContainer
 
+@onready var leave_button: Button = $LeaveButton
+
 func _ready() -> void:
 	if multiplayer.is_server():
 		start_game_button.connect("button_down", _start_game)
@@ -14,6 +16,7 @@ func _ready() -> void:
 		start_game_button.visible = false
 	
 	lobby.players_changed.connect(update_players)
+	leave_button.connect("button_down", GameClient.ask_disconnect)
 
 func _start_game():
 	lobby.start_game.rpc()

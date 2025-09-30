@@ -34,7 +34,7 @@ func change_player_name(id: int, player_name: String):
 	players_changed.emit()
 
 @rpc("authority", "call_local", "reliable")
-func remove_played(id: int):
+func remove_player(id: int):
 	connected_client.erase(id)
 	players_changed.emit()
 

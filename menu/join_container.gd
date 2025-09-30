@@ -7,6 +7,7 @@ extends VBoxContainer
 @onready var join_server_button: Button = $JoinServerButton
 @onready var back_button: Button = $BackButton
 
+@onready var user_name_input: LineEdit = $"../../UserNameInput"
 
 func _ready() -> void:
 	join_server_button.connect("button_down", _join_button_pressed)
@@ -14,7 +15,7 @@ func _ready() -> void:
 
 
 func _join_button_pressed():
-	GameClient.start_client(ip_input.text, 9500)
+	GameClient.start_client(ip_input.text, 9500, user_name_input.text)
 
 
 func _go_back():

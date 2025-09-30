@@ -7,12 +7,21 @@ custom_minimum_size = Vector2(0.365, 0)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_bottom = -587.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_d8bi5")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
+[node name="NameInput" type="LineEdit" parent="."]
 custom_minimum_size = Vector2(200, 25)
 layout_mode = 2
-text = "Name"
-scroll_active = false
+text = "Joueur"
+placeholder_text = "Nom d'utilisateur"
+max_length = 25
+editable = false
+context_menu_enabled = false
+
+[node name="KickButton" type="Button" parent="."]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Exclure"
