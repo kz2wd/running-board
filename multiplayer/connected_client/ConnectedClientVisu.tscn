@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://df7dv7mfmgyhm"]
+
+[ext_resource type="Script" uid="uid://x3q0u03qxnpr" path="res://multiplayer/connected_client/connected_client_visu.gd" id="1_d8bi5"]
+
+[node name="ConnectedClientVisu" type="HBoxContainer"]
+custom_minimum_size = Vector2(0.365, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_d8bi5")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(200, 25)
+layout_mode = 2
+text = "Name"
+scroll_active = false

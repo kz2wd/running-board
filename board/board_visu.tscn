@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://cbx8leu0mgeys"]
+
+[ext_resource type="Script" uid="uid://c3t3mh7074jak" path="res://board/board_visu.gd" id="1_vrmf4"]
+[ext_resource type="Texture2D" uid="uid://cpaqpdat88ql2" path="res://board/10m.png" id="1_w421w"]
+
+[node name="BoardVisu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vrmf4")
+
+[node name="10m" type="Sprite2D" parent="."]
+position = Vector2(578.11115, 325)
+scale = Vector2(0.6074074, 0.6074074)
+texture = ExtResource("1_w421w")
+
+[node name="PlayerContainer" type="Control" parent="."]
+layout_mode = 1
+anchor_right = 0.089
+anchor_bottom = 0.149
+offset_left = 69.0
+offset_top = 639.0
+offset_right = -33.528
+offset_bottom = 542.448

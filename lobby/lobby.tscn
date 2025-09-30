@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3 uid="uid://cpn13l2lxicjb"]
+
+[ext_resource type="Script" uid="uid://b22lf1myysdhv" path="res://lobby/LobbyVisu.gd" id="1_jtv5c"]
+[ext_resource type="Script" uid="uid://kss047wpc3yh" path="res://lobby/Lobby.gd" id="2_mnguq"]
+
+[node name="LobbyVisu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 17.0
+offset_right = 4.0
+offset_bottom = 17.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jtv5c")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 448.0
+offset_top = 146.0
+offset_right = 694.0
+offset_bottom = 169.0
+text = "Waiting for server to start game"
+
+[node name="StartGameButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 735.0
+offset_top = 142.0
+offset_right = 828.0
+offset_bottom = 173.0
+text = "Start game"
+
+[node name="Lobby" type="Node" parent="."]
+script = ExtResource("2_mnguq")
+metadata/_custom_type_script = "uid://kss047wpc3yh"
+
+[node name="PlayerContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 360.0
+offset_top = 207.0
+offset_right = -357.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 2

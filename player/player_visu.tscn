@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8xhg8b38u5c0"]
+
+[ext_resource type="Script" uid="uid://dlvvi23cqa4kc" path="res://player/player_visu.gd" id="1_krscd"]
+
+[node name="PlayerVisu" type="Node2D"]
+script = ExtResource("1_krscd")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+position = Vector2(-75, -49)
+polygon = PackedVector2Array(-7, 42, 74, 73, 159, 43, 76, -25)

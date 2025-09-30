@@ -1,0 +1,104 @@
+[gd_scene load_steps=4 format=3 uid="uid://bnx1l2yd8igca"]
+
+[ext_resource type="Script" uid="uid://hqhja54185cg" path="res://menu/boot_menu.gd" id="1_0o7x5"]
+[ext_resource type="Script" uid="uid://d1eu1bq3fmwsa" path="res://menu/join_container.gd" id="2_ppitj"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_n6ts3"]
+font_size = 30
+
+[node name="BootMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0o7x5")
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.15300001
+offset_left = 441.0
+offset_top = 110.0
+offset_right = -391.0
+offset_bottom = 59.855995
+text = "Le jeu de course là"
+label_settings = SubResource("LabelSettings_n6ts3")
+horizontal_alignment = 1
+
+[node name="ContentContainer" type="Control" parent="."]
+clip_contents = true
+layout_mode = 1
+anchor_left = 0.014
+anchor_top = 0.25300002
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 135.872
+offset_top = 0.055984497
+offset_right = -144.76782
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SelectionContainer" type="VBoxContainer" parent="ContentContainer"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.18200001
+anchor_top = -0.102000006
+anchor_right = 1.1680001
+anchor_bottom = 1.0
+offset_left = 426.65228
+offset_top = 110.96001
+offset_right = -372.91125
+offset_bottom = -139.0
+
+[node name="HostButton" type="Button" parent="ContentContainer/SelectionContainer"]
+custom_minimum_size = Vector2(160, 60)
+layout_mode = 2
+text = "Héberger"
+
+[node name="JoinButton" type="Button" parent="ContentContainer/SelectionContainer"]
+custom_minimum_size = Vector2(160, 60)
+layout_mode = 2
+text = "Rejoindre un ami"
+
+[node name="OptionButton" type="Button" parent="ContentContainer/SelectionContainer"]
+custom_minimum_size = Vector2(160, 60)
+layout_mode = 2
+text = "Options"
+
+[node name="JoinContainer" type="VBoxContainer" parent="ContentContainer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 271.0
+offset_top = 62.0
+offset_right = -228.23218
+offset_bottom = -229.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_ppitj")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ContentContainer/JoinContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="IpInput" type="LineEdit" parent="ContentContainer/JoinContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "localhost"
+placeholder_text = "IP"
+
+[node name="JoinServerButton" type="Button" parent="ContentContainer/JoinContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+text = "Rejoindre le serveur"
+
+[node name="BackButton" type="Button" parent="ContentContainer/JoinContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+text = "Retour"
