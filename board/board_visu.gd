@@ -13,12 +13,13 @@ func _ready() -> void:
 	if board == null:
 		push_warning("No board connected to board visu")
 	else:
-		board.connect("on_player_join", redraw)
+		board.on_player_join.connect(redraw)
+		board.on_turn_starting.connect(redraw)
 	
 func associate_board(b: Board):
 	board = b
-	board.connect("on_player_join", redraw)
-
+	board.on_player_join.connect(redraw)
+	board.on_turn_starting.connect(redraw)
 
 func get_player_race_progress(player: Player) -> float:
 	return player.progress / (board.max_distance * race_length)
@@ -36,3 +37,6 @@ func redraw():
 		child.queue_free()
 	for player: Player in board.players.values():
 		set_player_pos(player)
+		print("Set player")
+	print(board.players)
+	print("drawing board")

@@ -57,3 +57,9 @@ func untrusted_player_card_choice(unstrusted_choice: int):
 	
 	player.deck.add_card(chosen_card)
 	go_to_next_player()
+
+
+@rpc("authority", "call_local", "reliable")
+func start_game():
+	on_turn_starting.emit()
+	print("Emiting game start signal")

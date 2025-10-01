@@ -46,18 +46,10 @@ func start_game():
 	print("start game at " + str(multiplayer.get_unique_id()) + " called from " + str(multiplayer.get_remote_sender_id()))
 	var board: Board = Board.new()
 	
-	var disconnect_start: Callable
-	
-	var start = func():
-		var game_scene: GameScene = get_tree().current_scene
+	var after_change_scene = func(game_scene):
 		game_scene.set_board(board)
 		GameServer.init_board(board)
-		disconnect_start.call()
-		
-	disconnect_start = func():
-		get_tree().scene_changed.disconnect(start)
-		
-	get_tree().scene_changed.connect(start)
+		board.start_game.rpc()
+	await Utils.change_scene_and_run(GAME, after_change_scene)
 	
-	get_tree().change_scene_to_packed(GAME)
 	

@@ -22,3 +22,11 @@ func _bytes_to_uuid_string(bytes: PackedByteArray) -> String:
 		if i == 3 or i == 5 or i == 7 or i == 9:
 			s += "-"
 	return s.to_lower()
+	
+	
+func change_scene_and_run(new_scene: PackedScene, after: Callable):
+	get_tree().change_scene_to_packed(new_scene)
+	print("waiting for xscene change signak")
+	await get_tree().scene_changed
+	print("scene change over")
+	after.call(get_tree().current_scene)
