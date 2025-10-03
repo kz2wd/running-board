@@ -6,5 +6,5 @@
 script = ExtResource("1_krscd")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
-position = Vector2(-75, -49)
-polygon = PackedVector2Array(-7, 42, 74, 73, 159, 43, 76, -25)
+position = Vector2(-80, -53)
+polygon = PackedVector2Array(60, 29, 76, 43, 110, 28, 78, 12)

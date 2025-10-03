@@ -2,11 +2,12 @@ extends Control
 class_name BoardVisu
 
 @export var board: Board
-@export var lane_width: float = 10.0
+@export var lane_width: float = 60.0
 @export var race_length: float = 500.0
 
 const PLAYER_VISU = preload("uid://c8xhg8b38u5c0")
 @onready var player_container: Control = $PlayerContainer
+@onready var card_choice_display: HBoxContainer = $CardChoiceDisplay
 
 
 func _ready() -> void:
@@ -28,7 +29,7 @@ func get_player_race_progress(player: Player) -> float:
 func set_player_pos(player: Player):
 	var player_visu: PlayerVisu = PLAYER_VISU.instantiate()
 	player_container.add_child(player_visu)
-	player_visu.position.y = lane_width * player.lane
+	player_visu.position.y = -lane_width * player.lane
 	player_visu.position.x = get_player_race_progress(player)
 
 
@@ -37,6 +38,14 @@ func redraw():
 		child.queue_free()
 	for player: Player in board.players.values():
 		set_player_pos(player)
-		print("Set player")
-	print(board.players)
-	print("drawing board")
+		
+	show_card_choice()
+		
+		
+const CARD = preload("uid://booq1bvduv3ph")
+
+func show_card_choice():
+	for card: Card in board.drawn_cards:
+		var cardVisu: CardVisu = CARD.instantiate()
+		cardVisu.set_card(card)
+		card_choice_display.add_child(cardVisu)

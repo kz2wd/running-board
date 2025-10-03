@@ -1,3 +1,18 @@
-[gd_scene format=3 uid="uid://booq1bvduv3ph"]
+[gd_scene load_steps=3 format=3 uid="uid://booq1bvduv3ph"]
 
-[node name="Node2D" type="Node2D"]
+[ext_resource type="Script" uid="uid://4xmwsyr4n1y5" path="res://card/card_visu.gd" id="1_fjcud"]
+[ext_resource type="Texture2D" uid="uid://cs60n3l5wmjw2" path="res://card/assets/1.png" id="2_trrkg"]
+
+[node name="CardVisu" type="Control"]
+custom_minimum_size = Vector2(100, 19.25)
+layout_mode = 3
+anchor_right = 0.085
+anchor_bottom = 0.238
+offset_right = -3.9199982
+offset_bottom = -4.223999
+script = ExtResource("1_fjcud")
+
+[node name="Display" type="Sprite2D" parent="."]
+position = Vector2(48, 76)
+scale = Vector2(0.13076922, 0.1371511)
+texture = ExtResource("2_trrkg")

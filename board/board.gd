@@ -19,7 +19,15 @@ var players_to_play: Array[Player] = []
 
 var drawn_cards: Array[Card] = []
 
+func _ready():
+	global_deck = Deck.create_global_deck()
 
+func set_player_data(player_data: Array):
+	for p in player_data:
+		var player = Player.from_dict(p)
+		players[player.client.client_id] = player
+	print("Set board player data: " + str(players))
+	
 func prepare_card_pick():
 	players_to_play = players.values()
 	players_to_play.sort_custom(func(p1: Player, p2: Player): p1.progress < p2.progress)
@@ -35,6 +43,7 @@ func go_to_next_player():
 func add_player(id: int):
 	players[id] = Player.new()
 	on_player_join.emit(players[id])
+	print("Add player to internal board")
 
 func draw_from_global_deck():
 	for player in players_to_play:
@@ -58,8 +67,13 @@ func untrusted_player_card_choice(unstrusted_choice: int):
 	player.deck.add_card(chosen_card)
 	go_to_next_player()
 
-
-@rpc("authority", "call_local", "reliable")
 func start_game():
+	start_turn()
+	
+func start_turn():
+	turn += 1
+	prepare_card_pick()
+	for player in players_to_play:
+		drawn_cards.append(global_deck.draw_random_card())
+	
 	on_turn_starting.emit()
-	print("Emiting game start signal")

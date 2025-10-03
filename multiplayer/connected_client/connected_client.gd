@@ -15,3 +15,13 @@ static func create(id: int, c_name: String) -> ConnectedClient:
 	c.client_id = id
 	c.client_name = c_name
 	return c
+
+# --- Serialization helpers ---
+func to_dict() -> Dictionary:
+	return {
+		"id": client_id,
+		"name": client_name,
+	}
+
+static func from_dict(data: Dictionary) -> ConnectedClient:
+	return ConnectedClient.create(data["id"], data["name"])

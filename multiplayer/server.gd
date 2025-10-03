@@ -67,7 +67,8 @@ func on_peer_disconnect(id: int):
 	var uuid: String = uuid_from_id(id)
 	clients.erase(uuid)
 	player_left_game.emit()
-	lobby.remove_player.rpc(id)
+	if lobby != null:
+		lobby.remove_player.rpc(id)
 
 var current_game_uuid: String = ""
 
@@ -142,3 +143,13 @@ func untrusted_name_change(new_name: String):
 		clients[uuid].client_name = new_name
 	lobby.change_player_name.rpc(sender_id, new_name)
 	
+func request_game_start():
+	# make player list
+	var lane = 0
+	var serialized: Array[Dictionary] = []
+	for uuid in clients.keys():
+		var c: ConnectedClient = clients[uuid]
+		var player = Player.create(0, lane, 0, c)
+		lane += 1
+		serialized.append(player.to_dict())
+	lobby.start_game.rpc(serialized)

@@ -19,7 +19,7 @@ func _ready() -> void:
 	leave_button.connect("button_down", GameClient.ask_disconnect)
 
 func _start_game():
-	lobby.start_game.rpc()
+	GameServer.request_game_start()
 	
 	
 const CONNECTED_CLIENT_VISU = preload("uid://df7dv7mfmgyhm")

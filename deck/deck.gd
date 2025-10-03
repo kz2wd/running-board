@@ -33,3 +33,10 @@ func add_card(card: Card, amount:int =1):
 	
 func try_remove_card(card: Card):
 	cards.erase(card)
+
+static func create_global_deck() -> Deck:
+	var deck: Deck = Deck.new()
+	deck.cards = []
+	for key in Card.CARD_TYPE.values():
+		deck.cards.append(Card.from_type(key))
+	return deck

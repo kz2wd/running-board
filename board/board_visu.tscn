@@ -19,9 +19,21 @@ texture = ExtResource("1_w421w")
 
 [node name="PlayerContainer" type="Control" parent="."]
 layout_mode = 1
-anchor_right = 0.089
-anchor_bottom = 0.149
+anchor_right = 0.95300007
+anchor_bottom = 1.0
 offset_left = 69.0
-offset_top = 639.0
-offset_right = -33.528
-offset_bottom = 542.448
+offset_top = 636.0
+offset_right = -1028.8561
+offset_bottom = -12.0
+
+[node name="CardChoiceDisplay" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 321.0
+offset_top = 208.0
+offset_right = -374.0
+offset_bottom = -198.0
+grow_horizontal = 2
+grow_vertical = 2
