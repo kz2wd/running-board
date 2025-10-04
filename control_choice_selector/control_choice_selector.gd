@@ -21,6 +21,25 @@ var selection_state_color_modulation: Dictionary[SELECTION_STATE, Color] = {
 	SELECTION_STATE.REMOTE_CHOICE: Color(0.307, 0.307, 0.307, 0.651),
 }
 
+const CARD = preload("uid://booq1bvduv3ph")
+
+func show_card_choice(board: Board):
+	self.visible = true
+	for card: Card in board.drawn_cards:
+		var cardVisu: CardVisu = CARD.instantiate()
+		cardVisu.set_card(card)
+		self.add_child(cardVisu)
+		
+
+func reset(board: Board):
+	for child in get_children():
+		child.free()
+	
+	show_card_choice(board)
+	
+	_local_reset()
+	
+	refresh_children_link()
 
 func _local_reset():
 	children_states = {}
@@ -34,8 +53,8 @@ func enable_selection():
 	is_selection_enable = true
 	is_hover_enable = true
 
-func refresh_children():
-	_local_reset()
+func refresh_children_link():
+	
 	# Register click handlers for all children
 	for i in get_child_count():
 		var child = get_child(i)
@@ -49,6 +68,9 @@ func _on_child_input(event: InputEvent, index: int):
 		select(index, false)
 
 func select(index: int, is_final: bool):
+	if index > get_child_count():
+		push_warning("Index greater than child count")
+		return
 	if index in other_player_final_choices.values():
 		return
 	if not is_hover_enable:
@@ -71,7 +93,6 @@ func select(index: int, is_final: bool):
 	if old_selection != -1:
 		_set_selected_style(old_selection, _get_child_status(old_selection))
 
-	
 func _set_selected_style(index: int, selection_kind: SELECTION_STATE):
 	# Example: highlight with a color, or swap a style
 	get_child(index).modulate = selection_state_color_modulation[selection_kind]
@@ -82,17 +103,19 @@ func _get_child_status(index: int) -> SELECTION_STATE:
 		if not is_hover_enable:
 			# If is hover enable is false, then choice has been made, so it was final
 			return SELECTION_STATE.LOCAL_CHOICE
-	if index in other_player_final_choices:
+	if index in other_player_final_choices.values():
 		return SELECTION_STATE.REMOTE_CHOICE
 	# then check for local hover
 	if index == selected_index:
 		return SELECTION_STATE.LOCAL_HOVER
-	if index in other_player_choices:
+	if index in other_player_choices.values():
 		return SELECTION_STATE.REMOTE_HOVER
 		
 	return SELECTION_STATE.UNSELECTED
 
 func set_external_choice(player: Player, index: int, is_final: bool):
+	if index > get_child_count():
+		return
 	if other_player_choices.has(player):
 		var old_index = other_player_choices[player]
 		other_player_choices[player] = index

@@ -8,5 +8,8 @@ func set_card(arg_card: Card):
 	card = arg_card
 
 func _ready() -> void:
+	if card == null:
+		push_warning("Card is null in card visu")
+		return
 	display.texture = card.get_visual()
 	

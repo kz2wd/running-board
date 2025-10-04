@@ -11,6 +11,8 @@ signal on_turn_starting(turn: int)
 signal on_game_starting
 signal on_move_phase_start
 
+signal on_players_move(player: Player, cards: Array[Card])
+
 signal on_other_player_card_choice(player_id: int, card_index: int, is_final: bool)
 signal on_player_choice_start
 
@@ -26,14 +28,17 @@ var players_to_play: Array[Player] = []
 var drawn_cards: Array[Card] = []
 
 signal __move_phase
+signal __start_turn
 
 
 func _ready():
 	global_deck = Deck.create_global_deck()
 	GameServer.init_board(self)
 	GameServer.signal_ready.rpc_id(1)
+	GameClient.current_board = self
 	 # Connected deferred to prevent stack overflow
 	__move_phase.connect(start_move_phase, ConnectFlags.CONNECT_DEFERRED)
+	__start_turn.connect(GameServer.start_board_turn, ConnectFlags.CONNECT_DEFERRED)
 
 func set_player_data(player_data: Array):
 	for p in player_data:
@@ -42,8 +47,13 @@ func set_player_data(player_data: Array):
 	print("Set board player data: " + str(players))
 	
 func prepare_card_pick():
+	if not multiplayer.is_server():
+		return
+	player_final_choices = {}
 	players_to_play = players.values()
-	players_to_play.sort_custom(func(p1: Player, p2: Player): p1.progress < p2.progress)
+	players_to_play.sort_custom(func(p1: Player, p2: Player): return p1.progress < p2.progress)
+	for player in players_to_play:
+		print(str(player.client.client_id) + " - " + str(player.progress))
 	tell_player_to_choose()
 
 func get_next_player():
@@ -62,6 +72,7 @@ func go_to_next_player():
 	tell_player_to_choose()
 
 func draw_from_global_deck():
+	drawn_cards = []
 	for player in players_to_play:
 		drawn_cards.append(global_deck.draw_card())
 
@@ -73,10 +84,10 @@ func get_sender_player() -> Player:
 
 @rpc("any_peer", "call_local", "reliable")
 func untrusted_player_card_choice(unstrusted_choice: int, is_final_choice: bool) -> bool:
-	if unstrusted_choice > len(drawn_cards):
+	if not multiplayer.is_server():
 		return false
 	
-	if not multiplayer.is_server():
+	if unstrusted_choice > len(drawn_cards):
 		return false
 	
 	var player: Player = get_sender_player()
@@ -84,8 +95,13 @@ func untrusted_player_card_choice(unstrusted_choice: int, is_final_choice: bool)
 	if is_final_choice:
 		if player != get_next_player():
 			return false
-		
+			
+		if player_final_choices in player_final_choices.values():
+			return false
+		var choice = unstrusted_choice
+		player_final_choices[player] = choice 
 		set_other_player_choice.rpc(player.client.client_id, unstrusted_choice, true)
+		player.deck.add_card(drawn_cards[choice])
 		go_to_next_player()
 		
 	elif players_to_play.has(player):
@@ -95,16 +111,26 @@ func untrusted_player_card_choice(unstrusted_choice: int, is_final_choice: bool)
 	
 	return true
 
+func update_player_deck(player_id: int, card_index: int):
+	var player: Player = players[player_id]
+	var card: Card = drawn_cards[card_index]
+	player.deck.add_card(card)
+	
 
 @rpc("authority", "call_local", "reliable")
 func set_other_player_choice(player_id: int, unstrusted_choice: int, final_choice: bool) -> bool:
 	if unstrusted_choice > len(drawn_cards):
 		return false
 		
+	if final_choice:
+		update_player_deck(player_id, unstrusted_choice)
+	
 	on_other_player_card_choice.emit(player_id, unstrusted_choice, final_choice)
 	return true
 
 func tell_player_to_choose():
+	if not multiplayer.is_server():
+		return
 	_remote_tell_player_to_choose.rpc_id(get_next_player().client.client_id)
 
 @rpc("authority", "call_local", "reliable")
@@ -117,9 +143,9 @@ func start_game(player_data: Array):
 	on_game_starting.emit()
 
 @rpc("authority", "call_local", "reliable")
-func start_turn(card_types: Array):
+func remote_start_turn(card_types: Array):
 	turn += 1
-	prepare_card_pick()
+	drawn_cards = []
 	for type in card_types:
 		drawn_cards.append(Card.from_type(type))
 		print("adding local card " + str(type))
@@ -132,13 +158,32 @@ func start_move_phase():
 		return
 	print("Starting move phase")
 	# draw cards from player decks
-	# Send the cards to the players
-	# move the players
+	var player_drawn_cards: DrawnCards = DrawnCards.create()
+	for player: Player in players.values():
+		var card: Card = player.deck.draw_random_card()
+		var card_list = card.get_card_list(player)
+		player_drawn_cards.add_player_info(player, card_list)
+	# Send the cards to the players and the new positions
+	
+	remote_start_move_phase.rpc(player_drawn_cards.serialize())
+	
+	# wait a bit before new turn
+	await get_tree().create_timer(1.0).timeout
+	
 	# trigger new turn
-	remote_start_move_phase.rpc()
-	
+	__start_turn.emit()
+
+func is_player_local(player: Player) -> bool:
+	return player.client.client_id == multiplayer.get_unique_id()
+
 @rpc("authority", "call_local", "reliable")
-func remote_start_move_phase():
+func remote_start_move_phase(drawn_card_data: Dictionary):
+	Utils.log("starts local move phase")
 	on_move_phase_start.emit()
-	
+	var player_drawn_cards := DrawnCards.create(drawn_card_data)
+	for player: Player in players.values():
+		var cards = player_drawn_cards.get_player_cards(player)
+		player.play(cards)
+		on_players_move.emit(player, cards)
+			
 	

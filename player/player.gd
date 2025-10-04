@@ -30,9 +30,9 @@ func refresh_soft_fracture():
 	if fracture == 1:
 		fracture = 0
 		
-func play():
-	var card: Card = deck.draw_random_card()
-	card.apply(self)
+func play(cards: Array[Card]):
+	for card: Card in cards:
+		card.apply(self)
 
 static func create(arg_progress: int, arg_lane: int, arg_fracture: int, arg_client: ConnectedClient):
 	var p = Player.new()

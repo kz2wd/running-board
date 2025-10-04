@@ -170,7 +170,7 @@ func start_board_turn():
 	board.prepare_card_pick()
 	var turn_cards = board.global_deck.draw_cards(len(board.players_to_play))
 	var turn_types: Array = turn_cards.map(func(it: Card): return it.type)
-	board.start_turn.rpc(turn_types)
+	board.remote_start_turn.rpc(turn_types)
 	
 	
 var ready_list: Array[int] = []

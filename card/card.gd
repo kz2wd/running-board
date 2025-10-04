@@ -64,24 +64,34 @@ func get_visual() -> Resource:
 		return card_visuals[type]
 	return missing_visual
 
+# Unroll the possible card the player could get
+# as some cards draw more cards
+func get_card_list(player: Player) -> Array[Card]:
+	match type:
+		CARD_TYPE.BREATH_3M:
+			# This way, if deck has only 1 breath card, it get drawn 2 times only
+			# That said, breath cards cannot be chained
+			return [self, player.deck.draw_random_card()]
+	return [self]
 
+# applied on each client, has to be deterministic
 func apply(player: Player):
+	
 	# Distance
 	var run_distance: int = 0
+	# Specials
+	match type:
+		CARD_TYPE.RUN_LAPS_AMOUNT:
+			run_distance = GameClient.current_board.turn
+	
 	if card_run_distance.has(type):
 		run_distance += card_run_distance[type]
 	player.progress += player.get_distance(run_distance)
-	
 	# Fracture
 	if card_fracture.has(type):
 		player.add_fracture()
 	elif not card_no_fracture_refresh.has(type):
 		player.refresh_soft_fracture()
 	
-	# Specials
-	match type:
-		CARD_TYPE.BREATH_3M:
-			player.play()
-		CARD_TYPE.RUN_LAPS_AMOUNT:
-			player.progress += player.get_distance(GameServer.board.turn)
+	
 	

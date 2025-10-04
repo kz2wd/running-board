@@ -55,10 +55,13 @@ func after_server_connect():
 
 const BOOT_MENU = preload("uid://bnx1l2yd8igca")
 
+var current_board: Board
+
 func ask_disconnect():
 	GameServer.reset()
 	multiplayer.multiplayer_peer.close()
 	get_tree().change_scene_to_packed(BOOT_MENU)
+	current_board = null
 
 @rpc("authority", "reliable")
 func send_game_id(game_id: String):

@@ -3,14 +3,7 @@
 [ext_resource type="Script" uid="uid://c3t3mh7074jak" path="res://board/board_visu.gd" id="1_vrmf4"]
 [ext_resource type="Texture2D" uid="uid://cpaqpdat88ql2" path="res://board/10m.png" id="1_w421w"]
 [ext_resource type="Script" uid="uid://iucxi6ojpj3v" path="res://control_choice_selector/control_choice_selector.gd" id="3_2c13t"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_2c13t"]
-font_size = 30
-outline_size = 3
-outline_color = Color(0, 0, 0, 1)
-shadow_size = 4
-shadow_color = Color(0, 0, 0, 0.39215687)
-shadow_offset = Vector2(2.195, 2.86)
+[ext_resource type="LabelSettings" uid="uid://ccuixxoubv0gm" path="res://label_setting.tres" id="4_lk7pc"]
 
 [node name="BoardVisu" type="Control"]
 layout_mode = 3
@@ -61,6 +54,6 @@ offset_top = 42.0
 offset_right = -440.0
 offset_bottom = -491.15204
 text = "Faites votre choix"
-label_settings = SubResource("LabelSettings_2c13t")
+label_settings = ExtResource("4_lk7pc")
 horizontal_alignment = 1
 vertical_alignment = 1
