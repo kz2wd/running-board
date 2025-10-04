@@ -4,15 +4,15 @@
 [ext_resource type="Texture2D" uid="uid://cs60n3l5wmjw2" path="res://card/assets/1.png" id="2_trrkg"]
 
 [node name="CardVisu" type="Control"]
-custom_minimum_size = Vector2(100, 19.25)
+custom_minimum_size = Vector2(160, 19.25)
 layout_mode = 3
-anchor_right = 0.085
-anchor_bottom = 0.238
-offset_right = -3.9199982
-offset_bottom = -4.223999
+anchor_right = 0.147
+anchor_bottom = 0.395
+offset_right = -0.34399414
+offset_bottom = 0.039993286
 script = ExtResource("1_fjcud")
 
 [node name="Display" type="Sprite2D" parent="."]
-position = Vector2(48, 76)
-scale = Vector2(0.13076922, 0.1371511)
+position = Vector2(78.75, 127.55148)
+scale = Vector2(0.22538462, 0.23638399)
 texture = ExtResource("2_trrkg")

@@ -38,19 +38,12 @@ func remove_player(id: int):
 	connected_client.erase(id)
 	players_changed.emit()
 
-
 const GAME = preload("uid://fnyowjyucwet")
 
 @rpc("authority", "call_local", "reliable")
-func start_game(player_data: Array):
-	print("start game at " + str(multiplayer.get_unique_id()) + " called from " + str(multiplayer.get_remote_sender_id()))
-	var board: Board = Board.new()
+func set_game_scene():
+	Utils.log("set game scene")
+	get_tree().change_scene_to_packed(GAME)
 	
-	var after_change_scene = func(game_scene):
-		game_scene.set_board(board)
-		GameServer.init_board(board)
-		board.set_player_data(player_data)
-		board.start_game()
-	await Utils.change_scene_and_run(GAME, after_change_scene)
 	
 	

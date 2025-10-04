@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://fnyowjyucwet"]
+[gd_scene load_steps=4 format=3 uid="uid://fnyowjyucwet"]
 
 [ext_resource type="Script" uid="uid://cb7httrt07r5y" path="res://game/game.gd" id="1_e2o6t"]
 [ext_resource type="PackedScene" uid="uid://cbx8leu0mgeys" path="res://board/board_visu.tscn" id="2_feb5d"]
+[ext_resource type="Script" uid="uid://dl85rwqfsj1vc" path="res://board/board.gd" id="2_h7iqs"]
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -14,7 +15,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_e2o6t")
 
-[node name="BoardVisu" parent="." instance=ExtResource("2_feb5d")]
+[node name="Board" type="Node" parent="."]
+script = ExtResource("2_h7iqs")
+metadata/_custom_type_script = "uid://dl85rwqfsj1vc"
+
+[node name="BoardVisu" parent="." node_paths=PackedStringArray("board") instance=ExtResource("2_feb5d")]
 custom_minimum_size = Vector2(1.16, 2.38)
 layout_mode = 0
 anchors_preset = 0
@@ -24,5 +29,4 @@ offset_right = 1149.0
 offset_bottom = 647.0
 grow_horizontal = 1
 grow_vertical = 1
-lane_width = 60.0
-race_length = 500.0
+board = NodePath("../Board")

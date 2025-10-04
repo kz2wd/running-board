@@ -40,3 +40,9 @@ static func create_global_deck() -> Deck:
 	for key in Card.CARD_TYPE.values():
 		deck.cards.append(Card.from_type(key))
 	return deck
+
+func draw_cards(amount: int) -> Array:
+	var drawn_cards = []
+	for i in range(amount):
+		drawn_cards.append(draw_random_card())
+	return drawn_cards

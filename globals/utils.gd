@@ -26,7 +26,8 @@ func _bytes_to_uuid_string(bytes: PackedByteArray) -> String:
 	
 func change_scene_and_run(new_scene: PackedScene, after: Callable):
 	get_tree().change_scene_to_packed(new_scene)
-	print("waiting for xscene change signak")
 	await get_tree().scene_changed
-	print("scene change over")
 	after.call(get_tree().current_scene)
+
+func log(msg: String):
+	print("[" + str(multiplayer.get_unique_id()) + "] " + msg)

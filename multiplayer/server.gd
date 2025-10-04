@@ -117,8 +117,6 @@ func init_board(b: Board):
 	if not multiplayer.is_server():
 		return
 	GameServer.board = b
-	for client_id in clients.values():
-		board.add_player.rpc(client_id)
 
 func init_lobby_on_server():
 	if not multiplayer.is_server():
@@ -142,9 +140,9 @@ func untrusted_name_change(new_name: String):
 	if clients.has(uuid):
 		clients[uuid].client_name = new_name
 	lobby.change_player_name.rpc(sender_id, new_name)
-	
-func request_game_start():
-	# make player list
+
+
+func build_player_list() -> Array:
 	var lane = 0
 	var serialized: Array[Dictionary] = []
 	for uuid in clients.keys():
@@ -152,4 +150,46 @@ func request_game_start():
 		var player = Player.create(0, lane, 0, c)
 		lane += 1
 		serialized.append(player.to_dict())
-	lobby.start_game.rpc(serialized)
+	return serialized
+
+
+func request_game_start():
+	lobby.set_game_scene.rpc()
+	prepare_barrier(send_board_info)
+
+func send_board_info():
+	# fetch the board!
+	# If dedicated server, create a local one at same location as the one in the game scene
+	# If client mixed server, let the board set it
+	
+	board.start_game.rpc(build_player_list())
+	start_board_turn()
+
+func start_board_turn():
+	print("Drawing central cards")
+	board.prepare_card_pick()
+	var turn_cards = board.global_deck.draw_cards(len(board.players_to_play))
+	var turn_types: Array = turn_cards.map(func(it: Card): return it.type)
+	board.start_turn.rpc(turn_types)
+	
+	
+var ready_list: Array[int] = []
+#var ready_start: int = 0
+func prepare_barrier(after_barrier: Callable):
+	ready_list = []
+	#ready_start = now
+	barrier_over.connect(after_barrier, CONNECT_ONE_SHOT)
+
+signal barrier_over
+
+@rpc("any_peer", "call_local", "reliable")
+func signal_ready():
+	var sender_id = multiplayer.get_remote_sender_id()
+	print(str(sender_id) + " is ready")
+	if not ready_list.has(sender_id):
+		ready_list.append(sender_id)
+	
+	# Check if all players are ready
+	if len(ready_list) == len(clients):
+		print("Barrier over")
+		barrier_over.emit()
