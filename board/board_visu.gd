@@ -7,7 +7,7 @@ class_name BoardVisu
 
 const PLAYER_VISU = preload("uid://c8xhg8b38u5c0")
 @onready var player_container: Control = $PlayerContainer
-@onready var card_choice_display: HBoxContainer = $CardChoiceDisplay
+@onready var card_choice_display: ControlChoiceSelector = $CardChoiceDisplay
 
 
 func _ready() -> void:
@@ -15,10 +15,11 @@ func _ready() -> void:
 		push_warning("No board connected to board visu")
 	else:
 		board.on_turn_starting.connect(redraw)
-	
-func associate_board(b: Board):
-	board = b
-	board.on_turn_starting.connect(redraw)
+		board.on_turn_starting.connect(card_choice_display.refresh_children)
+		board.on_game_starting.connect(redraw)
+		
+		card_choice_display.on_selection_change.connect(
+			func (selection:int): board.untrusted_player_card_choice.rpc_id(1, selection))
 
 func get_player_race_progress(player: Player) -> float:
 	return player.progress / (board.max_distance * race_length)

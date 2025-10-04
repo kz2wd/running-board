@@ -1,7 +1,7 @@
 extends Node
 class_name Player
 
-var deck: Deck
+var deck: Deck = Deck.new()
 
 var progress: int = 0
 var lane: int = 0

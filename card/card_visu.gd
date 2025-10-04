@@ -9,3 +9,4 @@ func set_card(arg_card: Card):
 
 func _ready() -> void:
 	display.texture = card.get_visual()
+	

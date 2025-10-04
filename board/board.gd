@@ -8,7 +8,7 @@ class_name Board
 #signal on_player_reconnect(player: Player)
 signal on_turn_starting(turn: int)
 
-#signal on_game_initialized
+signal on_game_starting
 
 var players: Dictionary[int, Player] = {}
 
@@ -42,12 +42,6 @@ func get_next_player():
 func go_to_next_player():
 	players_to_play.pop_front()
 
-#
-#@rpc("authority", "call_local", "reliable", 0)
-#func add_player(id: int):
-	#players[id] = Player.new()
-	#on_player_join.emit(players[id])
-	#print("Add player to internal board")
 
 func draw_from_global_deck():
 	for player in players_to_play:
@@ -74,6 +68,7 @@ func untrusted_player_card_choice(unstrusted_choice: int):
 @rpc("authority", "call_local", "reliable")
 func start_game(player_data: Array):
 	set_player_data(player_data)
+	on_game_starting.emit()
 
 @rpc("authority", "call_local", "reliable")
 func start_turn(card_types: Array):
