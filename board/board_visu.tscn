@@ -1,8 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://cbx8leu0mgeys"]
+[gd_scene load_steps=5 format=3 uid="uid://cbx8leu0mgeys"]
 
 [ext_resource type="Script" uid="uid://c3t3mh7074jak" path="res://board/board_visu.gd" id="1_vrmf4"]
 [ext_resource type="Texture2D" uid="uid://cpaqpdat88ql2" path="res://board/10m.png" id="1_w421w"]
 [ext_resource type="Script" uid="uid://iucxi6ojpj3v" path="res://control_choice_selector/control_choice_selector.gd" id="3_2c13t"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_2c13t"]
+font_size = 30
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 0.39215687)
+shadow_offset = Vector2(2.195, 2.86)
 
 [node name="BoardVisu" type="Control"]
 layout_mode = 3
@@ -41,3 +49,18 @@ grow_vertical = 2
 alignment = 1
 script = ExtResource("3_2c13t")
 metadata/_custom_type_script = "uid://iucxi6ojpj3v"
+
+[node name="ChoiceLabel" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.97400004
+offset_left = 449.0
+offset_top = 42.0
+offset_right = -440.0
+offset_bottom = -491.15204
+text = "Faites votre choix"
+label_settings = SubResource("LabelSettings_2c13t")
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -7,8 +7,9 @@ class_name BoardVisu
 
 const PLAYER_VISU = preload("uid://c8xhg8b38u5c0")
 @onready var player_container: Control = $PlayerContainer
-@onready var card_choice_display: ControlChoiceSelector = $CardChoiceDisplay
 
+@onready var card_choice_display: ControlChoiceSelector = $CardChoiceDisplay
+@onready var choice_label: Label = $ChoiceLabel
 
 func _ready() -> void:
 	if board == null:
@@ -17,13 +18,34 @@ func _ready() -> void:
 		board.on_turn_starting.connect(redraw)
 		board.on_turn_starting.connect(card_choice_display.refresh_children)
 		board.on_game_starting.connect(redraw)
+		board.on_player_choice_start.connect(start_player_choice)
+		card_choice_display.on_selection_change.connect(handle_card_choice)
+		board.on_other_player_card_choice.connect(handle_other_player_choice)
+		board.on_move_phase_start.connect(handle_move_phase)
+
+func handle_move_phase():
+	card_choice_display.visible = false
+	choice_label.visible = false
+
+
+func handle_other_player_choice(player_id: int, card_index: int, is_final: bool):
+	if player_id == multiplayer.get_unique_id():
+		# Do not set our own choice as an external choice
+		return
 		
-		card_choice_display.on_selection_change.connect(
-			func (selection:int): board.untrusted_player_card_choice.rpc_id(1, selection))
+	card_choice_display.set_external_choice(board.players[player_id], card_index, is_final)
+			
+func handle_card_choice(choice: int, is_final: bool):
+	if is_final:
+		choice_label.visible = false 
+	board.untrusted_player_card_choice.rpc_id(1, choice, is_final)
 
 func get_player_race_progress(player: Player) -> float:
 	return player.progress / (board.max_distance * race_length)
 
+func start_player_choice():
+	choice_label.visible = true
+	card_choice_display.enable_selection()
 
 func set_player_pos(player: Player):
 	var player_visu: PlayerVisu = PLAYER_VISU.instantiate()
@@ -43,6 +65,7 @@ func redraw():
 		
 		
 const CARD = preload("uid://booq1bvduv3ph")
+
 
 func show_card_choice():
 	for card: Card in board.drawn_cards:
