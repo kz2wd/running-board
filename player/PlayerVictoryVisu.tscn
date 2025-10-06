@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://c3uldqoju8y3u"]
+
+[ext_resource type="Script" uid="uid://0s3734oh0igo" path="res://player/player_victory_visu.gd" id="1_rttbf"]
+[ext_resource type="LabelSettings" uid="uid://ccuixxoubv0gm" path="res://label_setting.tres" id="2_wa75e"]
+
+[node name="PlayerVictoryVisu" type="Control"]
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -2.0
+offset_right = -946.0
+offset_bottom = -430.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rttbf")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 18.0
+offset_right = 213.0
+offset_bottom = 76.0
+label_settings = ExtResource("2_wa75e")
+horizontal_alignment = 1

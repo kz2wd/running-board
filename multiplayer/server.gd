@@ -24,7 +24,7 @@ func reset():
 	board = null
 	lobby = null
 	game_started = false
-	
+
 
 func start_server(player_name: String) -> void:
 	username = player_name
@@ -38,6 +38,9 @@ func start_server(player_name: String) -> void:
 	peer.peer_disconnected.connect(on_peer_disconnect)
 	print("STARTING SERVER at port " + str(PORT))
 	prepare_new_game()
+	
+	await get_tree().scene_changed
+	GameServer.add_local_player()
 	
 func disconnect_peer(id: int):
 	multiplayer.multiplayer_peer.disconnect_peer(id)
@@ -102,34 +105,23 @@ func ask_join_game(uuid: String, client_name: String):
 			multiplayer.get_remote_sender_id(),
 			client_name)
 		validate_join_player(uuid, remote_client)
-		
+
+func client_list_info() -> Array:
+	var client_infos = []
+	for client: ConnectedClient in clients.values():
+		client_infos.append(client.to_dict())
+	return client_infos
+
 func validate_join_player(uuid: String, remote_client: ConnectedClient):
 	clients[uuid] = remote_client
 	print("adding player to lobby from " + str(multiplayer.get_unique_id()))
-	lobby.add_player.rpc(remote_client.client_id, remote_client.client_name)
+	lobby.add_player.rpc(remote_client.to_dict())
 	# Inform the new player about the previously connected ones
 	for previously_connected_client in clients.values():
-		lobby.add_player.rpc_id(remote_client.client_id, previously_connected_client.client_id, previously_connected_client.client_name)
+		lobby.set_player_list.rpc_id(remote_client.client_id, client_list_info())
 	
 	player_joined_game.emit()
 
-func init_board(b: Board):
-	if not multiplayer.is_server():
-		return
-	GameServer.board = b
-
-func init_lobby_on_server():
-	if not multiplayer.is_server():
-		return
-	var lob_scene: LobbyVisu = get_tree().current_scene
-	GameServer.lobby = lob_scene.lobby
-	get_tree().scene_changed.disconnect(init_lobby_on_server)
-	var fake_remote_client = ConnectedClient.create(
-			multiplayer.get_unique_id(),
-			username)
-	clients["Local_player"] = fake_remote_client
-	lobby.add_player(fake_remote_client.client_id, fake_remote_client.client_name)
-	player_joined_game.emit()
 
 @rpc("any_peer", "call_local", "reliable")
 func untrusted_name_change(new_name: String):
@@ -161,18 +153,9 @@ func send_board_info():
 	# fetch the board!
 	# If dedicated server, create a local one at same location as the one in the game scene
 	# If client mixed server, let the board set it
-	
 	board.start_game.rpc(build_player_list())
-	start_board_turn()
+	board.start_board_turn()
 
-func start_board_turn():
-	print("Drawing central cards")
-	board.prepare_card_pick()
-	var turn_cards = board.global_deck.draw_cards(len(board.players_to_play))
-	var turn_types: Array = turn_cards.map(func(it: Card): return it.type)
-	board.remote_start_turn.rpc(turn_types)
-	
-	
 var ready_list: Array[int] = []
 #var ready_start: int = 0
 func prepare_barrier(after_barrier: Callable):
@@ -193,3 +176,36 @@ func signal_ready():
 	if len(ready_list) == len(clients):
 		print("Barrier over")
 		barrier_over.emit()
+
+func init_board(_board: Board):
+	board = _board
+
+func add_local_player():
+	var client = ConnectedClient.create(1, username) 
+	clients["local_player"] = client
+	lobby.add_player.rpc(client.to_dict())
+	
+func set_all_clients_unready():
+	if not multiplayer.is_server():
+		return
+	for client: ConnectedClient in clients.values():
+		client.change_ready_status(false)
+
+@rpc("any_peer", "call_local", "reliable")
+func player_is_back_to_lobby():
+	if not multiplayer.is_server():
+		return
+	print("Player is back to lobby")
+	var sender_id = multiplayer.get_remote_sender_id()
+	var uuid = uuid_from_id(sender_id)
+	if uuid == "":
+		print("uuid not found for sender " + str(sender_id))
+		print(clients)
+		return
+	if clients[uuid].is_ready:
+		return
+	while lobby == null:
+		# Wait for server to init lobby
+		await get_tree().create_timer(0.5).timeout
+	lobby.set_player_list.rpc_id(sender_id, client_list_info())
+	lobby.set_player_ready.rpc(sender_id)

@@ -19,11 +19,8 @@ const LOBBY = preload("uid://cpn13l2lxicjb")
 
 func _host_button_pressed():
 	GameServer.start_server(user_name_input.text)
-	# Assume we are already connected since we are the server
-	get_tree().scene_changed.connect(GameServer.init_lobby_on_server)
 	get_tree().change_scene_to_packed(LOBBY)
 	
-
 func _join_button_pressed():
 	_enable_selection(join_container)
 

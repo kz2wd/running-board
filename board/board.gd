@@ -16,13 +16,15 @@ signal on_players_move(player: Player, cards: Array[Card])
 signal on_other_player_card_choice(player_id: int, card_index: int, is_final: bool)
 signal on_player_choice_start
 
+signal on_winner(winner: Player)
+
 var players: Dictionary[int, Player] = {}
 
 var global_deck: Deck
 
 
 var turn: int = 0
-var max_distance: int = 100
+var max_distance: int = 10
 var players_to_play: Array[Player] = []
 
 var drawn_cards: Array[Card] = []
@@ -38,20 +40,65 @@ func _ready():
 	GameClient.current_board = self
 	 # Connected deferred to prevent stack overflow
 	__move_phase.connect(start_move_phase, ConnectFlags.CONNECT_DEFERRED)
-	__start_turn.connect(GameServer.start_board_turn, ConnectFlags.CONNECT_DEFERRED)
+	__start_turn.connect(start_board_turn, ConnectFlags.CONNECT_DEFERRED)
 
 func set_player_data(player_data: Array):
 	for p in player_data:
 		var player = Player.from_dict(p)
 		players[player.client.client_id] = player
 	print("Set board player data: " + str(players))
+
+# Returns winner Player or null 
+func check_for_winner() -> Player:
+	var winners: Array[Player] = []
+	for player: Player in players.values():
+		if player.progress >= max_distance:
+			winners.append(player)
+	if winners.is_empty():
+		return null
+	sort_players_by_progress(winners)
+	var winner = winners[-1]
+	return winner
+
+
+@rpc("authority", "call_local", "reliable")
+func remote_show_winner(winner_id: int):
+	Utils.log("showing winner")
+	on_winner.emit(players[winner_id])
+	await get_tree().create_timer(3.0).timeout
+	# Send player back to lobby...
+	GameClient.reconnect_to_lobby()
+
+func start_board_turn():
+	if not multiplayer.is_server():
+		return
+	var winner : Player = check_for_winner()
+	if winner != null:
+		GameServer.set_all_clients_unready()
+		remote_show_winner.rpc(winner.client.client_id)
+		return
 	
+	print("Drawing central cards")
+	prepare_card_pick()
+	var turn_cards = global_deck.draw_cards(len(players_to_play))
+	var turn_types: Array = turn_cards.map(func(it: Card): return it.type)
+	remote_start_turn.rpc(turn_types)
+
+func sort_players_by_progress(player_list: Array[Player]):
+	# Furthest player is the one with the biggest progress
+	# If progresses are equals, then the smallest lane is the further
+	var player_sorter = func(p1: Player, p2: Player):
+		if p1.progress == p2.progress:
+			return p1.lane > p2.lane
+		return p1.progress < p2.progress
+	player_list.sort_custom(player_sorter)
+
 func prepare_card_pick():
 	if not multiplayer.is_server():
 		return
 	player_final_choices = {}
 	players_to_play = players.values()
-	players_to_play.sort_custom(func(p1: Player, p2: Player): return p1.progress < p2.progress)
+	sort_players_by_progress(players_to_play)
 	for player in players_to_play:
 		print(str(player.client.client_id) + " - " + str(player.progress))
 	tell_player_to_choose()

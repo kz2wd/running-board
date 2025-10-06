@@ -52,6 +52,12 @@ const LOBBY = preload("uid://cpn13l2lxicjb")
 func after_server_connect():
 	get_tree().change_scene_to_packed(LOBBY)
 	print("client Connected successfully!")
+	
+func reconnect_to_lobby():
+	current_board = null
+	get_tree().change_scene_to_packed(LOBBY)
+	await get_tree().scene_changed
+	GameServer.player_is_back_to_lobby.rpc_id(1)
 
 const BOOT_MENU = preload("uid://bnx1l2yd8igca")
 

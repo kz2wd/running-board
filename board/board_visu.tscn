@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cbx8leu0mgeys"]
+[gd_scene load_steps=6 format=3 uid="uid://cbx8leu0mgeys"]
 
 [ext_resource type="Script" uid="uid://c3t3mh7074jak" path="res://board/board_visu.gd" id="1_vrmf4"]
 [ext_resource type="Texture2D" uid="uid://cpaqpdat88ql2" path="res://board/10m.png" id="1_w421w"]
 [ext_resource type="Script" uid="uid://iucxi6ojpj3v" path="res://control_choice_selector/control_choice_selector.gd" id="3_2c13t"]
 [ext_resource type="LabelSettings" uid="uid://ccuixxoubv0gm" path="res://label_setting.tres" id="4_lk7pc"]
+[ext_resource type="PackedScene" uid="uid://c3uldqoju8y3u" path="res://player/PlayerVictoryVisu.tscn" id="5_g44r1"]
 
 [node name="BoardVisu" type="Control"]
 layout_mode = 3
@@ -57,3 +58,11 @@ text = "Faites votre choix"
 label_settings = ExtResource("4_lk7pc")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="PlayerVictoryVisu" parent="." instance=ExtResource("5_g44r1")]
+layout_mode = 1
+anchors_preset = 15
+offset_left = 407.0
+offset_top = 240.0
+offset_right = 407.0
+offset_bottom = 240.0

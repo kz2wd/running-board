@@ -3,7 +3,7 @@ class_name BoardVisu
 
 @export var board: Board
 @export var lane_width: float = 60.0
-@export var race_length: float = 800.0
+@export var race_length: float = 1030.0
 
 const PLAYER_VISU = preload("uid://c8xhg8b38u5c0")
 @onready var player_container: Control = $PlayerContainer
@@ -11,6 +11,7 @@ const PLAYER_VISU = preload("uid://c8xhg8b38u5c0")
 @onready var card_choice_display: ControlChoiceSelector = $CardChoiceDisplay
 @onready var choice_label: Label = $ChoiceLabel
 
+@onready var player_victory_visu: PlayerVictoryVisu = $PlayerVictoryVisu
 
 func _ready() -> void:
 	if board == null:
@@ -24,6 +25,10 @@ func _ready() -> void:
 		board.on_other_player_card_choice.connect(handle_other_player_choice)
 		board.on_move_phase_start.connect(handle_move_phase)
 		board.on_players_move.connect(handle_player_movement)
+		board.on_winner.connect(handle_winner)
+
+func handle_winner(winner: Player):
+	player_victory_visu.show_winner(winner)
 
 func handle_player_movement(player: Player, cards: Array[Card]):
 	# TODO
@@ -49,7 +54,7 @@ func handle_card_choice(choice: int, is_final: bool):
 	board.untrusted_player_card_choice.rpc_id(1, choice, is_final)
 
 func get_player_race_progress(player: Player) -> float:
-	return float(player.progress) / board.max_distance * race_length
+	return min(float(player.progress) / board.max_distance * race_length, race_length)
 
 func start_player_choice():
 	choice_label.visible = true

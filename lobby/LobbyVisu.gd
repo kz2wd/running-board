@@ -16,7 +16,7 @@ func _ready() -> void:
 		start_game_button.visible = false
 	
 	lobby.players_changed.connect(update_players)
-	leave_button.connect("button_down", GameClient.ask_disconnect)
+	leave_button.button_down.connect(GameClient.ask_disconnect)
 
 func _start_game():
 	GameServer.request_game_start()
